@@ -20,7 +20,7 @@ namespace WebAPI.Service
         {
             if (bet.ChosenNumber > 36 || bet.ChosenNumber < 0) 
             {
-                throw new InsufficientFunds(bet.ChosenNumber);
+                throw new BetOutofRangeException(bet.ChosenNumber);
             }
             else if(bet.Amount <= 0) 
             {

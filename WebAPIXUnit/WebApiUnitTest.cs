@@ -5,6 +5,7 @@ using System.Security.Principal;
 using WebAPI.Contract;
 using WebAPI.Controllers;
 using WebAPI.Database;
+using WebAPI.Exceptions;
 using WebAPI.Service;
 
 namespace WebAPIXUnit
@@ -39,6 +40,27 @@ namespace WebAPIXUnit
             _mockDB.Verify(mock => mock.SaveBet(It.Is<Bet>(x => x.Amount == bet.Amount && x.ChosenNumber == bet.ChosenNumber)), Times.Once);
         }
 
+        [Fact]
+        public void Post_PlaceBet_BetOutofRange_Fails()
+        {
+            //Arrage
+            var controller = new RouletteControler(_service);
+            var bet = new Bet() { Amount = 50, ChosenNumber = 456, SpinId = 1 };
+
+            _mockDB.Setup(mock => mock.SaveBet(It.IsAny<Bet>()));
+
+            //Act
+            var result = controller.PostPlaceBet(bet);
+
+            //Assert
+            Assert.True(result is BadRequestObjectResult);
+
+            var badRequest = (BadRequestObjectResult)result;
+            Assert.Equal(400, badRequest.StatusCode);
+            Assert.Equal(badRequest.Value, new BetOutofRangeException(bet.ChosenNumber).Message);
+
+            _mockDB.Verify(mock => mock.SaveBet(It.Is<Bet>(x => x.Amount == bet.Amount && x.ChosenNumber == bet.ChosenNumber)), Times.Never);
+        }
 
         /*
           [Fact]
