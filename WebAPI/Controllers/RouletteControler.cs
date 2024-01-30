@@ -24,12 +24,12 @@ namespace WebAPI.Controllers
         
 
         [HttpPost("PlaceBet")]
-        public HttpResponseMessage PostPlaceBet([FromBody] Bet bet)
+        public IActionResult PostPlaceBet([FromBody] Bet bet)
         {
             try
             {
                 _rouletteService.PlaceBet(bet);
-                return new HttpResponseMessage(HttpStatusCode.Accepted);
+                return Ok();
             }
             //catch (MinimumDepositException ex)
             //{
@@ -37,8 +37,7 @@ namespace WebAPI.Controllers
             //}
             catch (Exception ex)
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(ex.Message) };
-
+                return StatusCode(500, new { Message = "Internal Server Error", Exception = ex.Message });
             }
 
         }
@@ -54,41 +53,39 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
+                //return BadRequest(ex.Message);
                 //return new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(ex.Message) };
-                return Ok();
+                return StatusCode(500, new { Message = "Internal Server Error", Exception = ex.Message });
             }
 
         }
 
         [HttpGet("Payout")]
-        public HttpResponseMessage GetPayout()
+        public IActionResult GetPayout()
         {
             try
             {
                 var result = _rouletteService.GetPayout();
-                string jsonContent = JsonConvert.SerializeObject(result);
-                return new HttpResponseMessage(HttpStatusCode.Accepted) { Content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json") };
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(ex.Message) };
-
+                return StatusCode(500, new { Message = "Internal Server Error", Exception = ex.Message });
             }
+
         }
 
         [HttpGet("GetPreviousSpins")]
-        public HttpResponseMessage GetPreviousSpins()
+        public IActionResult GetPreviousSpins()
         {
             try
             {
                 var result = _rouletteService.GetPreviousSpins();
-                string jsonContent = JsonConvert.SerializeObject(result);
-                return new HttpResponseMessage(HttpStatusCode.Accepted) { Content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json") };
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(ex.Message) };
-
+                return StatusCode(500, new { Message = "Internal Server Error", Exception = ex.Message });
             }
         }
     }
