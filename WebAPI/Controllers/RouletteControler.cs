@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using WebAPI.Contract;
+using WebAPI.Exceptions;
 using WebAPI.Service;
 using static SQLite.SQLite3;
 
@@ -21,8 +22,6 @@ namespace WebAPI.Controllers
             _rouletteService = rouletteService;
         }
 
-        
-
         [HttpPost("PlaceBet")]
         public IActionResult PostPlaceBet([FromBody] Bet bet)
         {
@@ -31,10 +30,14 @@ namespace WebAPI.Controllers
                 _rouletteService.PlaceBet(bet);
                 return Ok();
             }
-            //catch (MinimumDepositException ex)
-            //{
-            //    return new HttpResponseMessage(HttpStatusCode.NotAcceptable) { Content = new StringContent(ex.Message) };
-            //}
+            catch (BetOutofRangeException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InsufficientFunds ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, new { Message = "Internal Server Error", Exception = ex.Message });
@@ -45,19 +48,20 @@ namespace WebAPI.Controllers
         [HttpGet("{spinId:long}")]
         public IActionResult GetSpin(long spinId)
         {
+
             try
             {
-                //Throw no bets have been placed :/
                 var result = _rouletteService.Spin(spinId);
                 return Ok(result);
             }
+            catch (InvalidSpinException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (Exception ex)
             {
-                //return BadRequest(ex.Message);
-                //return new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(ex.Message) };
-                return StatusCode(500, new { Message = "Internal Server Error", Exception = ex.Message });
+               return StatusCode(500, new { Message = "Internal Server Error", Exception = ex.Message });
             }
-
         }
 
         [HttpGet("Payout")]
@@ -72,7 +76,6 @@ namespace WebAPI.Controllers
             {
                 return StatusCode(500, new { Message = "Internal Server Error", Exception = ex.Message });
             }
-
         }
 
         [HttpGet("GetPreviousSpins")]
@@ -89,6 +92,4 @@ namespace WebAPI.Controllers
             }
         }
     }
-
-   
 }

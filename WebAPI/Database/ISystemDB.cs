@@ -10,5 +10,6 @@ namespace WebAPI.Database
         public void ClearBetsFromUser(List<Bet> bets);
         public List<SpinResult> GetSpinsFromSpinIds(List<long> spinIds);
         public List<SpinResult> GetAllSpins();
+        public List<Bet> GetBetsFromSpinId(long spinId);
     }
 }

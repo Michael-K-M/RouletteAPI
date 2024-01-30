@@ -3,6 +3,7 @@
 using WebAPI.Contract;
 using WebAPI.Controllers;
 using WebAPI.Database;
+using WebAPI.Exceptions;
 
 namespace WebAPI.Service
 {
@@ -17,24 +18,31 @@ namespace WebAPI.Service
 
         public void PlaceBet(Bet bet)
         {
-            // bet not found
-            // insefishint money
-            // bet out of range
+            if (bet.ChosenNumber > 36 || bet.ChosenNumber < 0) 
+            {
+                throw new InsufficientFunds(bet.ChosenNumber);
+            }
+            else if(bet.Amount <= 0) 
+            {
+                throw new InsufficientFunds(bet.Amount);
+            }
 
             bet.UserId = _loggedInUser;
-            _db.SaveBet(bet);
+            _db.SaveBet(bet);  
         }
 
         public SpinResult Spin(long spinId)
         {
+            if (_db.GetBetsFromSpinId(spinId).Any() == false) 
+            {
+                throw new InvalidSpinException(spinId);
+            }
             Random random = new Random();
             // Generate a random number between 0 and 36
             int rollNumber = random.Next(0, 37);
-
             var spin = new SpinResult(spinId, rollNumber);
 
             _db.SaveSpinNumber(spin);
-
             return spin;
         }
 
@@ -52,7 +60,6 @@ namespace WebAPI.Service
                         payout.Amount += bet.Amount * 35;
                 }
             }
-
             _db.ClearBetsFromUser(existingBets);
             return payout;
         }

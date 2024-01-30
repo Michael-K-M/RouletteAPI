@@ -17,7 +17,6 @@ namespace WebAPI.Database
         public SystemDB(IHostEnvironment hostEnvironment)
         {
             string contentRootPath = hostEnvironment.ContentRootPath;
-            //var appDataDirectory = Path.Combine(contentRootPath, "App_Data");
             _con = new SQLiteConnection(Path.Combine(contentRootPath, "database.db"));
             _con.CreateTable<Bet>();
             _con.CreateTable<SpinResult>();
@@ -28,7 +27,7 @@ namespace WebAPI.Database
         {
             foreach (var bet in bets)
             {
-                _con.Delete<Bet>(bet);
+                _con.Delete(bet);
             }
         }
 
@@ -40,6 +39,10 @@ namespace WebAPI.Database
         public List<Bet> GetBetsFromUser(long userId)
         {
             return _con.Table<Bet>().Where(x => x.UserId == userId).ToList();
+        }
+        public List<Bet> GetBetsFromSpinId(long spinId)
+        {
+            return _con.Table<Bet>().Where(x => x.SpinId == spinId).ToList();
         }
 
         public List<SpinResult> GetSpinsFromSpinIds(List<long> spinIds)
