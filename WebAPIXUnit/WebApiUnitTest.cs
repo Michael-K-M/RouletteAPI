@@ -67,7 +67,7 @@ namespace WebAPIXUnit
         {
             //Arrage
             var controller = new RouletteControler(_service);
-            var bet = new Bet(1,25,0);
+            var bet = new Bet(1,0,25);
 
             //Act
             var result = controller.PostPlaceBet(bet);
