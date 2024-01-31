@@ -13,7 +13,6 @@ namespace WebAPI.Contract
 
         public SpinResult() { }
 
-
         [PrimaryKey][AutoIncrement]
         public long Id { get; set; }
         public long SpinId { get; set; }

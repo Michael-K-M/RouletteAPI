@@ -15,7 +15,6 @@ namespace WebAPI.Service
         {
             _db = db;
         }
-
         public void PlaceBet(Bet bet)
         {
             if (bet.ChosenNumber > 36 || bet.ChosenNumber < 0) 
@@ -26,7 +25,6 @@ namespace WebAPI.Service
             {
                 throw new InsufficientFunds(bet.Amount);
             }
-
             bet.UserId = _loggedInUser;
             _db.SaveBet(bet);  
         }

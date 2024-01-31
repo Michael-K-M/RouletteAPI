@@ -13,14 +13,12 @@ namespace WebAPI.Database
     public class SystemDB : ISystemDB
     {
         private readonly SQLiteConnection _con;
-
         public SystemDB(IHostEnvironment hostEnvironment)
         {
             string contentRootPath = hostEnvironment.ContentRootPath;
             _con = new SQLiteConnection(Path.Combine(contentRootPath, "database.db"));
             _con.CreateTable<Bet>();
             _con.CreateTable<SpinResult>();
-
         }
 
         public void ClearBetsFromUser(List<Bet> bets)
@@ -40,6 +38,7 @@ namespace WebAPI.Database
         {
             return _con.Table<Bet>().Where(x => x.UserId == userId).ToList();
         }
+
         public List<Bet> GetBetsFromSpinId(long spinId)
         {
             return _con.Table<Bet>().Where(x => x.SpinId == spinId).ToList();
